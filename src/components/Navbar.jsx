@@ -21,25 +21,27 @@ export default function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className={`relative z-[100] flex items-center justify-between px-8 py-4 max-w-7xl mx-auto transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+    <nav className={`relative z-[100] flex items-center w-full px-6 md:px-8 py-4 max-w-7xl mx-auto transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
       mounted ? 'translate-y-0 opacity-100' : '-translate-y-12 opacity-0'
     }`}>
-      {/* Logo */}
-      <div className="flex items-center gap-4 z-10">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Abstract geometric edgy logo */}
-          <rect x="4" y="4" width="10" height="10" stroke="#111827" strokeWidth="2"/>
-          <rect x="18" y="18" width="10" height="10" stroke="#111827" strokeWidth="2"/>
-          <path d="M14 14L18 18" stroke="#111827" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M23 9L9 23" stroke="#111827" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-        <span className="font-light text-2xl tracking-widest text-slate-900">
-          {content?.brand_name || 'PixelHeaven'}
-        </span>
+      {/* Logo (Left, 33%) */}
+      <div className="flex-1 flex justify-start items-center z-10">
+        <div className="flex items-center gap-3 lg:gap-4">
+          <svg width="28" height="28" className="lg:w-8 lg:h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Abstract geometric edgy logo */}
+            <rect x="4" y="4" width="10" height="10" stroke="#111827" strokeWidth="2"/>
+            <rect x="18" y="18" width="10" height="10" stroke="#111827" strokeWidth="2"/>
+            <path d="M14 14L18 18" stroke="#111827" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M23 9L9 23" stroke="#111827" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          <span className="font-light text-xl lg:text-2xl tracking-widest text-slate-900">
+            {content?.brand_name || 'PixelHeaven'}
+          </span>
+        </div>
       </div>
 
-      {/* Links (Absolute Center) */}
-      <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-12">
+      {/* Links (Center, 33%) */}
+      <div className="flex-1 hidden md:flex justify-center items-center gap-4 lg:gap-12">
         <Link to="/" className={`group flex flex-col transition-colors ${isActive('/') ? 'text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-900 font-normal'}`}>
           <span>{content?.link_home || 'Home'}</span>
           <span className={`h-[2px] w-full bg-slate-900 mt-1 transition-transform duration-300 ease-out ${isActive('/') ? 'scale-x-100' : 'origin-right scale-x-0 group-hover:scale-x-100 group-hover:origin-left'}`}></span>
@@ -59,7 +61,7 @@ export default function Navbar() {
 
           {/* Dropdown Menu */}
           <div className="absolute top-full left-1/2 -translate-x-1/2 pt-6 opacity-0 invisible translate-y-3 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out z-50">
-            <div className="w-[280px] bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-slate-100 p-3 flex flex-col gap-1">
+            <div className="w-[280px] bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-slate-100 p-3 flex flex-col gap-1 text-left">
               <Link to="/services/ui-ux" className="group/item flex items-center gap-4 px-3 py-3 hover:bg-slate-50 rounded-xl transition-all duration-300 ease-out">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 group-hover/item:bg-slate-900 transition-colors duration-300 ease-out">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-slate-600 group-hover/item:text-white transition-colors duration-300 ease-out" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -112,24 +114,47 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Contact Button */}
-      <div className="z-10 flex justify-end min-w-[150px]">
-        <Link to="/contact" className="group relative block h-11 w-36 cursor-pointer">
-          {/* Black Background Pill */}
-          <div className="absolute top-0 left-0 h-full w-full bg-slate-900 rounded-full transition-all duration-500 ease-out group-hover:w-11 group-hover:left-[100px] shadow-sm"></div>
-          
-          {/* White Circle */}
-          <div className="absolute top-1 left-1 z-20 bg-white rounded-full w-9 h-9 flex items-center justify-center transition-all duration-500 ease-out group-hover:left-[104px] shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-900 transition-transform duration-500 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </div>
+      {/* Contact Button (Right, 33%) */}
+      <div className="flex-1 flex justify-end z-10">
+        {isActive('/contact') ? (
+          <Link 
+            to="/" 
+            className="group relative block h-11 w-36 cursor-pointer"
+          >
+            {/* Black Background Pill - Shrinks to the Left */}
+            <div className="absolute top-0 right-0 h-full w-full bg-slate-900 rounded-full transition-all duration-500 ease-out group-hover:w-11 group-hover:right-[100px] shadow-sm"></div>
+            
+            {/* White Circle - Moves from Right to Left */}
+            <div className="absolute top-1 right-1 z-20 bg-white rounded-full w-9 h-9 flex items-center justify-center transition-all duration-500 ease-out group-hover:right-[104px] shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-900 transition-transform duration-500 group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                {/* Arrow pointing left to signify going back */}
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15m0 0l7.5-7.5M4.5 12l7.5 7.5" />
+              </svg>
+            </div>
 
-          {/* Text */}
-          <div className="absolute top-0 left-10 h-full w-[104px] z-10 flex items-center justify-center transition-all duration-500 ease-out group-hover:opacity-0 group-hover:translate-x-4">
-            <span className="text-white font-light tracking-wide text-sm">{content?.button_contact || 'Contact'}</span>
-          </div>
-        </Link>
+            {/* Text - Fades and moves Left */}
+            <div className="absolute top-0 right-10 h-full w-[104px] z-10 flex items-center justify-center transition-all duration-500 ease-out group-hover:opacity-0 group-hover:-translate-x-4">
+              <span className="text-white font-light tracking-wide text-sm">Go Back</span>
+            </div>
+          </Link>
+        ) : (
+          <Link to="/contact" className="group relative block h-11 w-36 cursor-pointer">
+            {/* Black Background Pill */}
+            <div className="absolute top-0 left-0 h-full w-full bg-slate-900 rounded-full transition-all duration-500 ease-out group-hover:w-11 group-hover:left-[100px] shadow-sm"></div>
+            
+            {/* White Circle */}
+            <div className="absolute top-1 left-1 z-20 bg-white rounded-full w-9 h-9 flex items-center justify-center transition-all duration-500 ease-out group-hover:left-[104px] shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-900 transition-transform duration-500 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </div>
+
+            {/* Text */}
+            <div className="absolute top-0 left-10 h-full w-[104px] z-10 flex items-center justify-center transition-all duration-500 ease-out group-hover:opacity-0 group-hover:translate-x-4">
+              <span className="text-white font-light tracking-wide text-sm">{content?.button_contact || 'Contact'}</span>
+            </div>
+          </Link>
+        )}
       </div>
     </nav>
   );

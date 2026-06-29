@@ -15,6 +15,16 @@ const tabs = [
   { id: 'section_cta', label: 'CTA (Single)', type: 'single' },
   { id: 'section_footer', label: 'Footer (Single)', type: 'single' },
   { id: 'page_about_team', label: 'About Team (List)', type: 'list' },
+  { id: 'page_webdev_hero', label: 'Web Dev Hero (Single)', type: 'single' },
+  { id: 'page_webdev_features', label: 'Web Dev Features (List)', type: 'list' },
+  { id: 'page_webdev_process', label: 'Web Dev Process (List)', type: 'list' },
+  { id: 'page_webdev_pricing', label: 'Web Dev Pricing (List)', type: 'list' },
+  { id: 'page_software_hero', label: 'Software Hero (Single)', type: 'single' },
+  { id: 'page_software_persuade', label: 'Software Persuade (Single)', type: 'single' },
+  { id: 'page_software_features', label: 'Software Features (List)', type: 'list' },
+  { id: 'page_software_process', label: 'Software Process (List)', type: 'list' },
+  { id: 'page_software_tech_header', label: 'Software Tech Header (Single)', type: 'single' },
+  { id: 'page_software_tech_categories', label: 'Software Tech Cats (List)', type: 'list' },
 ];
 
 const schemaDefs = {
@@ -33,6 +43,16 @@ const schemaDefs = {
   page_about_timeline: ['year', 'title', 'description', 'sort_order'],
   page_about_why_reasons: ['number', 'title', 'description', 'sort_order'],
   page_about_team: ['name', 'role', 'image_url', 'description', 'sort_order'],
+  page_webdev_hero: ['badge_text', 'title', 'description', 'stat_number', 'stat_label'],
+  page_webdev_features: ['title', 'description', 'icon_name'],
+  page_webdev_process: ['step_number', 'title', 'description'],
+  page_webdev_pricing: ['tier_name', 'price', 'target_audience', 'features_list'],
+  page_software_hero: ['badge_text', 'title', 'description'],
+  page_software_persuade: ['badge', 'title', 'description', 'button_text'],
+  page_software_features: ['title', 'description'],
+  page_software_process: ['step_number', 'title', 'description'],
+  page_software_tech_header: ['badge', 'title', 'description'],
+  page_software_tech_categories: ['category', 'description', 'techs', 'sort_order'],
 };
 
 export default function AdminDashboard() {

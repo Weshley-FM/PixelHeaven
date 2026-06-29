@@ -27,7 +27,10 @@ const products = [
   }
 ];
 
-export default function ProductsA() {
+export default function ProductsA({ 
+  title = "The Arsenal.",
+  description = "We don't just build things, we engineer unfair advantages. Here is the work we do to elevate your brand."
+}) {
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef(null);
 
@@ -92,10 +95,10 @@ export default function ProductsA() {
              }`}
            >
              <h3 className="text-6xl md:text-[8rem] font-light text-slate-900 tracking-tighter leading-none mb-8">
-               The Arsenal.
+               {title}
              </h3>
              <p className="text-xl md:text-3xl text-slate-500 font-light max-w-3xl leading-relaxed">
-               We don't just build things, we engineer unfair advantages. Here is the work we do to elevate your brand.
+               {description}
              </p>
            </div>
            

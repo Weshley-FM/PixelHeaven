@@ -46,11 +46,11 @@ export default function FAQ() {
                onClick={() => setActiveFaq(faq)}
                className="group flex items-center justify-between border-t border-slate-200 py-8 md:py-12 text-left transition-colors duration-500 hover:bg-slate-100/50 -mx-6 px-6 md:-mx-12 md:px-12 lg:-mx-24 lg:px-24"
              >
-                <div className="flex items-center gap-8 md:gap-16">
-                   <span className="text-sm font-semibold tracking-widest text-slate-400">
+                <div className="flex items-start md:items-center gap-8 md:gap-16 w-full">
+                   <span className="text-sm font-semibold tracking-widest text-slate-400 mt-2 md:mt-0">
                      0{index + 1}
                    </span>
-                   <span className="text-2xl md:text-3xl lg:text-4xl font-light tracking-tight text-slate-900 group-hover:translate-x-4 transition-transform duration-500">
+                   <span className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight leading-tight text-slate-900 group-hover:translate-x-4 transition-transform duration-500 max-w-3xl pr-4">
                      {faq.question}
                    </span>
                 </div>
