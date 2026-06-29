@@ -1,8 +1,16 @@
 import React, { useRef, useEffect, useState } from 'react';
+import pb from '../pb';
 
 export default function About() {
   const containerRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [content, setContent] = useState(null);
+
+  useEffect(() => {
+    pb.collection('section_about').getFirstListItem('')
+      .then(data => setContent(data))
+      .catch(err => console.error("About content fetch error:", err));
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,7 +72,7 @@ export default function About() {
         {/* Fixed Header */}
         <div className="absolute top-8 left-6 md:top-12 md:left-12 z-20 flex items-center gap-4">
           <span className="h-px w-6 bg-slate-300"></span>
-          <h2 className="text-sm font-semibold tracking-widest uppercase text-slate-400">About Us</h2>
+          <h2 className="text-sm font-semibold tracking-widest uppercase text-slate-400">{content?.section_label || 'About Us'}</h2>
         </div>
 
         {/* The Track */}
@@ -75,10 +83,10 @@ export default function About() {
           {/* Slide 1 */}
           <div className="w-screen h-full flex flex-col justify-center px-12 md:px-24">
             <h3 className={`text-5xl md:text-7xl lg:text-[6rem] font-light text-slate-900 max-w-5xl leading-[1.05] tracking-tight transition-all duration-1000 transform ${activeSlide === 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-              We started with a simple idea.
+              {content?.slide1_title || 'We started with a simple idea.'}
             </h3>
             <p className={`text-xl md:text-2xl text-slate-500 mt-8 max-w-2xl leading-relaxed font-light transition-all duration-1000 delay-150 transform ${activeSlide === 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-              To strip away the noise and build digital tools that actually help founders scale their visions without compromising on aesthetics.
+              {content?.slide1_text || 'To strip away the noise and build digital tools that actually help founders scale their visions without compromising on aesthetics.'}
             </p>
           </div>
 
@@ -88,10 +96,10 @@ export default function About() {
                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" alt="Modern Abstract 3D Shapes" className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000" />
              </div>
             <h3 className={`text-5xl md:text-7xl lg:text-[6rem] font-light text-slate-900 max-w-3xl leading-[1.05] tracking-tight z-10 transition-all duration-1000 transform ${activeSlide === 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-              Then we broke all the rules.
+              {content?.slide2_title || 'Then we broke all the rules.'}
             </h3>
             <p className={`text-xl md:text-2xl text-slate-500 mt-8 max-w-xl z-10 leading-relaxed font-light transition-all duration-1000 delay-150 transform ${activeSlide === 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-              Generic templates don't cut it. We merged high-end engineering with rebellious design to create something entirely new and wildly effective.
+              {content?.slide2_text || 'Generic templates don\'t cut it. We merged high-end engineering with rebellious design to create something entirely new and wildly effective.'}
             </p>
           </div>
 
@@ -99,34 +107,34 @@ export default function About() {
           <div className="w-screen h-full flex flex-col justify-center px-12 md:px-24">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-16 max-w-5xl">
                <div className={`border-t border-slate-200 pt-6 transition-all duration-700 transform ${activeSlide === 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                 <div className="text-5xl md:text-6xl text-slate-900 font-light tracking-tight mb-3">100+</div>
-                 <div className="text-slate-500 tracking-wide font-light">Startups Launched</div>
+                 <div className="text-5xl md:text-6xl text-slate-900 font-light tracking-tight mb-3">{content?.stat1_number || '100+'}</div>
+                 <div className="text-slate-500 tracking-wide font-light">{content?.stat1_label || 'Startups Launched'}</div>
                </div>
                <div className={`border-t border-slate-200 pt-6 transition-all duration-700 delay-100 transform ${activeSlide === 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                 <div className="text-5xl md:text-6xl text-slate-900 font-light tracking-tight mb-3">$50M</div>
-                 <div className="text-slate-500 tracking-wide font-light">Client Revenue</div>
+                 <div className="text-5xl md:text-6xl text-slate-900 font-light tracking-tight mb-3">{content?.stat2_number || '$50M'}</div>
+                 <div className="text-slate-500 tracking-wide font-light">{content?.stat2_label || 'Client Revenue'}</div>
                </div>
                <div className={`border-t border-slate-200 pt-6 transition-all duration-700 delay-200 transform ${activeSlide === 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                 <div className="text-5xl md:text-6xl text-slate-900 font-light tracking-tight mb-3">14</div>
-                 <div className="text-slate-500 tracking-wide font-light">Design Awards</div>
+                 <div className="text-5xl md:text-6xl text-slate-900 font-light tracking-tight mb-3">{content?.stat3_number || '14'}</div>
+                 <div className="text-slate-500 tracking-wide font-light">{content?.stat3_label || 'Design Awards'}</div>
                </div>
                <div className={`border-t border-slate-200 pt-6 transition-all duration-700 delay-300 transform ${activeSlide === 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                 <div className="text-5xl md:text-6xl text-slate-900 font-light tracking-tight mb-3">24/7</div>
-                 <div className="text-slate-500 tracking-wide font-light">Relentless Grind</div>
+                 <div className="text-5xl md:text-6xl text-slate-900 font-light tracking-tight mb-3">{content?.stat4_number || '24/7'}</div>
+                 <div className="text-slate-500 tracking-wide font-light">{content?.stat4_label || 'Relentless Grind'}</div>
                </div>
             </div>
             <h3 className={`text-4xl md:text-6xl font-light text-slate-900 max-w-4xl leading-[1.05] tracking-tight transition-all duration-1000 delay-500 transform ${activeSlide === 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-              The numbers speak for themselves.
+              {content?.slide3_title || 'The numbers speak for themselves.'}
             </h3>
           </div>
 
           {/* Slide 4 */}
           <div className="w-screen h-full flex flex-col items-center justify-center text-center px-12 md:px-24 bg-slate-950">
             <h3 className={`text-6xl md:text-8xl lg:text-[8rem] font-light tracking-tight leading-none text-white mb-12 transition-all duration-1000 transform ${activeSlide === 3 ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-              Ready to elevate?
+              {content?.slide4_title || 'Ready to elevate?'}
             </h3>
             <button className={`px-10 py-5 bg-white text-slate-900 rounded-full font-semibold tracking-wide text-lg hover:bg-slate-100 hover:scale-105 hover:shadow-xl hover:shadow-white/20 transition-all duration-500 delay-200 transform ${activeSlide === 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-              Start Your Project
+              {content?.slide4_button || 'Start Your Project'}
             </button>
           </div>
           

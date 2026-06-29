@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import pb from '../pb';
 
 export default function AdminLogin({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -12,23 +13,10 @@ export default function AdminLogin({ onLogin }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
-      // Save token and notify parent
-      localStorage.setItem('adminToken', data.token);
-      onLogin(data.user);
+      const authData = await pb.admins.authWithPassword(email, password);
+      onLogin(authData.admin);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import pb from '../pb';
 
 // Stick figure font dictionary (0 to 1 relative grid for each letter)
 const font = {
@@ -40,9 +41,19 @@ export default function Hero() {
   
   const [introFinished, setIntroFinished] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
+  const [content, setContent] = useState(null);
   const isDrawing = useRef(false);
   const drawIntervalRef = useRef(null);
   const isCancelledRef = useRef(false);
+
+  useEffect(() => {
+    pb.collection('section_hero').getFirstListItem('')
+      .then(data => setContent(data))
+      .catch(err => {
+        // Silently ignore if no data is found initially
+        console.error("Hero content fetch error (might be empty):", err);
+      });
+  }, []);
 
   // Live Clock Effect
   useEffect(() => {
@@ -103,13 +114,14 @@ export default function Hero() {
     };
     window.addEventListener('resize', handleResize);
 
-    const phrases = [
+    const defaultPhrases = [
       "need a good design?",
       "let's build it!",
       "pixel heaven rocks",
       "draw something cool",
       "creative freedom"
     ];
+    const phrases = content?.draw_phrases ? content.draw_phrases.split(',').map(s => s.trim()) : defaultPhrases;
 
     const generateTextPoints = (text) => {
       const points = [];
@@ -379,7 +391,7 @@ export default function Hero() {
 
         {/* Top Left Widget */}
         <div className="absolute top-6 left-6 md:top-8 md:left-8 z-10 flex items-center gap-3 pointer-events-none">
-           <span className="text-sm font-semibold tracking-wide text-slate-800">PixelHeaven</span>
+           <span className="text-sm font-semibold tracking-wide text-slate-800">{content?.brand_name || 'PixelHeaven'}</span>
            <span className="h-1 w-1 rounded-full bg-slate-400"></span>
            <span className="text-sm font-medium text-slate-500 min-w-[80px]">{currentTime}</span>
         </div>
@@ -404,13 +416,13 @@ export default function Hero() {
             <img className="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=2" alt="User" />
             <img className="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=3" alt="User" />
           </div>
-          <span className="text-sm font-medium text-slate-700 pr-1">1.6K+ Founders</span>
+          <span className="text-sm font-medium text-slate-700 pr-1">{content?.founders_text || '1.6K+ Founders'}</span>
         </div>
 
         {/* Bottom Right Widget */}
         <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 z-10 hidden lg:flex items-center gap-5 pointer-events-none">
            <p className="text-[15px] leading-relaxed font-medium text-slate-500 text-right max-w-[220px]">
-             We help startups create brands, websites, and decks.
+             {content?.subtitle || 'We help startups create brands, websites, and decks.'}
            </p>
            <div className="h-10 w-[2px] bg-slate-400/80 rounded-full"></div>
         </div>

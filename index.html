@@ -7,6 +7,20 @@
     <title>pixelheaven</title>
   </head>
   <body>
+    <script>
+      window.addEventListener('error', function(e) {
+        var errDiv = document.createElement('div');
+        errDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:red;color:white;z-index:999999;padding:20px;font-family:monospace;white-space:pre-wrap;';
+        errDiv.textContent = 'RUNTIME ERROR: ' + e.message + '\nFile: ' + e.filename + '\nLine: ' + e.lineno + ':' + e.colno + '\n' + (e.error ? e.error.stack : '');
+        document.body.appendChild(errDiv);
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        var errDiv = document.createElement('div');
+        errDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:red;color:white;z-index:999999;padding:20px;font-family:monospace;white-space:pre-wrap;';
+        errDiv.textContent = 'PROMISE REJECTION: ' + (e.reason ? e.reason.stack || e.reason : 'Unknown reason');
+        document.body.appendChild(errDiv);
+      });
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -1,62 +1,21 @@
 import React, { useRef, useEffect, useState } from 'react';
+import pb from '../pb';
 import ScrollReveal from './ScrollReveal';
-
-const services = [
-  {
-    id: 1,
-    title: 'Brand Architecture',
-    tagline: 'Dictating visual and verbal identity across every touchpoint.',
-    details: [
-      'Visual Identity Systems',
-      'Verbal Identity & Copywriting',
-      'Brand Guidelines & Playbooks',
-      'Market Positioning'
-    ],
-    number: '01'
-  },
-  {
-    id: 2,
-    title: 'UI/UX Engineering',
-    tagline: 'Interfaces that blur the line between software and art.',
-    details: [
-      'High-Fidelity Prototyping',
-      'Design Systems',
-      'Interaction Design',
-      'User Research & Testing'
-    ],
-    number: '02'
-  },
-  {
-    id: 3,
-    title: 'Motion & 3D',
-    tagline: 'Kinetic typography and WebGL experiences that captivate instantly.',
-    details: [
-      'WebGL & Three.js',
-      'Kinetic Typography',
-      'Micro-interactions',
-      '3D Product Rendering'
-    ],
-    number: '03'
-  },
-  {
-    id: 4,
-    title: 'Growth Strategy',
-    tagline: 'Data-driven funnels that convert attention into massive revenue.',
-    details: [
-      'Conversion Rate Optimization',
-      'Funnel Architecture',
-      'A/B Testing & Analytics',
-      'Performance Marketing'
-    ],
-    number: '04'
-  }
-];
 
 export default function Services() {
   const containerRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
+    pb.collection('services').getFullList({ sort: '+created' })
+      .then(data => setServices(data))
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    if (services.length === 0) return;
+
     const options = {
       root: null,
       rootMargin: '-50% 0px -50% 0px', 
@@ -78,7 +37,7 @@ export default function Services() {
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [services]);
 
   return (
     <section className="bg-slate-50 relative" ref={containerRef}>
@@ -152,20 +111,11 @@ export default function Services() {
                 {/* Clean, Premium Monochromatic Card */}
                 <div className="w-full max-w-xl bg-white border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] rounded-[2.5rem] p-10 md:p-16">
                   
-                  <p className="text-2xl md:text-4xl text-slate-800 font-light leading-tight mb-12 tracking-tight">
-                    {s.tagline}
+                  <p className="text-2xl md:text-3xl text-slate-800 font-light leading-relaxed mb-12 tracking-tight">
+                    {s.description}
                   </p>
                   
                   <div className="h-px w-12 bg-slate-200 mb-8"></div>
-
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4">
-                    {s.details.map((detail, i) => (
-                      <li key={i} className="flex items-start gap-4 text-base md:text-lg text-slate-600 font-medium">
-                        <span className="w-2 h-2 rounded-full bg-slate-900 mt-2 shrink-0"></span>
-                        <span>{detail}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </div>
             );

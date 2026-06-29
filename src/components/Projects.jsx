@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import pb from '../pb';
 
 // We will now fetch projects from our backend API
 
@@ -11,9 +12,7 @@ export default function Projects() {
   const imageContainerRef = useRef(null);
 
   useEffect(() => {
-    // Fetch real project data from backend API
-    fetch('http://localhost:5000/api/projects')
-      .then(res => res.json())
+    pb.collection('projects').getFullList({ sort: '-created' })
       .then(data => {
         setProjects(data);
         setLoading(false);

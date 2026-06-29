@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import pb from '../pb';
 
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
+  const [content, setContent] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     // Small delay ensures the browser paints the initial invisible state before animating
     const timer = setTimeout(() => setMounted(true), 100);
+    
+    pb.collection('section_navbar').getFirstListItem('')
+      .then(data => setContent(data))
+      .catch(err => console.error("Navbar content fetch error:", err));
+
     return () => clearTimeout(timer);
   }, []);
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className={`relative z-[100] flex items-center justify-between px-8 py-4 max-w-7xl mx-auto transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -24,23 +34,23 @@ export default function Navbar() {
           <path d="M23 9L9 23" stroke="#111827" strokeWidth="2" strokeLinecap="round"/>
         </svg>
         <span className="font-light text-2xl tracking-widest text-slate-900">
-          PixelHeaven
+          {content?.brand_name || 'PixelHeaven'}
         </span>
       </div>
 
       {/* Links (Absolute Center) */}
       <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-12">
-        <Link to="/" className="group flex flex-col text-slate-500 hover:text-slate-900 font-normal transition-colors">
-          <span>Home</span>
-          <span className="h-[1px] w-full bg-slate-900 origin-right scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left mt-1"></span>
+        <Link to="/" className={`group flex flex-col transition-colors ${isActive('/') ? 'text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-900 font-normal'}`}>
+          <span>{content?.link_home || 'Home'}</span>
+          <span className={`h-[2px] w-full bg-slate-900 mt-1 transition-transform duration-300 ease-out ${isActive('/') ? 'scale-x-100' : 'origin-right scale-x-0 group-hover:scale-x-100 group-hover:origin-left'}`}></span>
         </Link>
-        <Link to="/about" className="group flex flex-col text-slate-500 hover:text-slate-900 font-normal transition-colors">
-          <span>About</span>
-          <span className="h-[1px] w-full bg-slate-900 origin-right scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left mt-1"></span>
+        <Link to="/about" className={`group flex flex-col transition-colors ${isActive('/about') ? 'text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-900 font-normal'}`}>
+          <span>{content?.link_about || 'About'}</span>
+          <span className={`h-[2px] w-full bg-slate-900 mt-1 transition-transform duration-300 ease-out ${isActive('/about') ? 'scale-x-100' : 'origin-right scale-x-0 group-hover:scale-x-100 group-hover:origin-left'}`}></span>
         </Link>
         <div className="group relative flex flex-col text-slate-500 hover:text-slate-900 font-normal transition-colors cursor-pointer">
           <div className="flex items-center gap-1">
-            <span>Service</span>
+            <span>{content?.link_service || 'Service'}</span>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mt-[2px] transition-transform duration-300 group-hover:-rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
@@ -117,7 +127,7 @@ export default function Navbar() {
 
           {/* Text */}
           <div className="absolute top-0 left-10 h-full w-[104px] z-10 flex items-center justify-center transition-all duration-500 ease-out group-hover:opacity-0 group-hover:translate-x-4">
-            <span className="text-white font-light tracking-wide text-sm">Contact</span>
+            <span className="text-white font-light tracking-wide text-sm">{content?.button_contact || 'Contact'}</span>
           </div>
         </Link>
       </div>

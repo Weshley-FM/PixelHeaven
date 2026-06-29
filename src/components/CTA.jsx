@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import pb from '../pb';
 import ScrollReveal from './ScrollReveal';
 
 export default function CTA() {
+  const [content, setContent] = useState(null);
+
+  useEffect(() => {
+    pb.collection('section_cta').getFirstListItem('')
+      .then(data => setContent(data))
+      .catch(err => console.error("CTA fetch error:", err));
+  }, []);
+
   return (
     <section className="bg-slate-950 pt-24 pb-8 md:pt-32 md:pb-12 flex flex-col justify-between min-h-[85vh] relative selection:bg-white selection:text-slate-900">
        
@@ -9,7 +18,7 @@ export default function CTA() {
        <div className="px-6 md:px-12 lg:px-24 mb-16 md:mb-24">
          <div className="flex items-center gap-4">
            <span className="h-px w-8 bg-slate-700"></span>
-           <h2 className="text-sm font-semibold tracking-widest uppercase text-slate-500">Get in Touch</h2>
+           <h2 className="text-sm font-semibold tracking-widest uppercase text-slate-500">{content?.section_label || 'Get in Touch'}</h2>
          </div>
        </div>
 
@@ -19,21 +28,20 @@ export default function CTA() {
           {/* Left: Huge Typography Hook */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center">
              <h3 className="text-5xl md:text-7xl lg:text-[5.5rem] font-light text-white tracking-tighter leading-[1.1] max-w-2xl">
-               Let's build <br className="hidden md:block"/>
-               <span className="text-slate-600">something extraordinary.</span>
+               {content?.title || content?.cta_title || "Let's build something extraordinary."}
              </h3>
           </div>
 
           {/* Right: Modern Form Block */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center lg:border-l border-slate-800 lg:pl-20 xl:pl-32 py-8">
              <p className="text-xl md:text-2xl font-light text-slate-400 leading-relaxed mb-16">
-               Enter your email below and our engineering team will get back to you within 24 hours to discuss your vision.
+               {content?.description || 'Enter your email below and our engineering team will get back to you within 24 hours to discuss your vision.'}
              </p>
              
              <form className="w-full relative group" onSubmit={(e) => e.preventDefault()}>
                 <input 
                   type="email" 
-                  placeholder="hello@yourcompany.com" 
+                  placeholder={content?.placeholder_text || "hello@yourcompany.com"}
                   className="w-full bg-transparent border-b border-slate-700 pb-6 text-white placeholder-slate-700 focus:outline-none focus:border-white transition-colors duration-500 text-2xl md:text-3xl font-light pr-16 peer"
                   required
                 />

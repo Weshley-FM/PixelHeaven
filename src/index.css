@@ -5,6 +5,12 @@
   body {
     @apply bg-white text-slate-900 min-h-screen antialiased;
   }
+  
+  @keyframes scrollDown {
+    0% { transform: translateY(-100%); }
+    50% { transform: translateY(100%); }
+    100% { transform: translateY(100%); }
+  }
 }
 
 @layer components {

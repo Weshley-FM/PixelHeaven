@@ -1,23 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import pb from '../pb';
 import ScrollReveal from './ScrollReveal';
 
-const reviewsRow1 = [
-  { id: 1, quote: "They completely re-engineered how we think about our brand. The execution speed was unlike anything we've seen.", author: "Sarah Jenkins", role: "CEO at Vanguard", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" },
-  { id: 2, quote: "The level of polish and obsession with detail is unmatched. It feels like absolute magic.", author: "David Chen", role: "Founder at Aura", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop" },
-  { id: 3, quote: "We scaled our entire platform in 3 months. The execution was absolutely flawless.", author: "Elena Rodriguez", role: "VP Product at Lumina", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop" },
-  { id: 4, quote: "Every single deliverable exceeded our expectations. They are true craftsmen.", author: "Michael Chang", role: "CTO at Nexus", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" },
-  { id: 5, quote: "Pixel Heaven lives up to its name. A truly strategic partner, not just a dev shop.", author: "Olivia Kim", role: "Founder at Stellar", image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200&auto=format&fit=crop" },
-];
-
-const reviewsRow2 = [
-  { id: 6, quote: "Working with them felt like an extension of our own team. Seamless communication.", author: "Jessica Alba", role: "CMO at Honest", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" },
-  { id: 7, quote: "They transformed our convoluted MVP into a sleek, market-ready enterprise platform.", author: "Robert Fox", role: "Product at Acme", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" },
-  { id: 8, quote: "I've worked with dozens of agencies. None of them come close to this level of quality.", author: "Leslie Alexander", role: "CEO at Globex", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
-  { id: 9, quote: "An absolute masterclass in digital design. Worth every single penny and then some.", author: "Cameron Williamson", role: "Founder at Stripe", image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=200&auto=format&fit=crop" },
-  { id: 10, quote: "They didn't just build a website, they built a conversion engine. Revenue is up 40%.", author: "Jenny Wilson", role: "Growth at Shopify", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop" },
-];
-
-const ReviewCard = ({ quote, author, role, image }) => (
+const ReviewCard = ({ text, author, role }) => {
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(author)}&background=random`;
+  return (
   <div className="w-[350px] md:w-[450px] shrink-0 bg-white border border-slate-100 rounded-3xl p-8 md:p-10 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
     <div>
       <div className="flex gap-1 mb-8 text-slate-900">
@@ -27,20 +14,43 @@ const ReviewCard = ({ quote, author, role, image }) => (
           </svg>
         ))}
       </div>
-      <p className="text-lg md:text-xl text-slate-800 leading-relaxed font-light mb-10">"{quote}"</p>
+      <p className="text-lg md:text-xl text-slate-800 leading-relaxed font-light mb-10">"{text}"</p>
     </div>
     
     <div className="flex items-center gap-4 mt-auto">
-      <img src={image} alt={author} className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover" />
+      <img src={avatarUrl} alt={author} className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover" />
       <div>
         <h4 className="font-medium text-slate-900">{author}</h4>
         <p className="text-[10px] md:text-xs text-slate-500 uppercase tracking-widest mt-1 font-semibold">{role}</p>
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default function Testimonials() {
+  const [testimonials, setTestimonials] = useState([]);
+
+  useEffect(() => {
+    pb.collection('testimonials').getFullList({ sort: '+created' })
+      .then(data => setTestimonials(data))
+      .catch(console.error);
+  }, []);
+
+  const half = Math.ceil(testimonials.length / 2);
+  let row1 = testimonials.slice(0, half);
+  let row2 = testimonials.slice(half);
+
+  // Pad the rows to ensure they span the screen width before duplication
+  while (row1.length > 0 && row1.length < 8) {
+    row1 = [...row1, ...testimonials.slice(0, half)];
+  }
+  while (row2.length > 0 && row2.length < 8) {
+    row2 = [...row2, ...testimonials.slice(half)];
+  }
+
+  if (testimonials.length === 0) return null;
+
   return (
     <section className="bg-slate-50 py-24 md:py-32 overflow-hidden">
       
@@ -87,14 +97,14 @@ export default function Testimonials() {
         
         {/* Track 1: Moving Left */}
         <div className="marquee-track flex gap-6 w-max animate-scroll-left">
-          {[...reviewsRow1, ...reviewsRow1].map((review, i) => (
+          {[...row1, ...row1].map((review, i) => (
             <ReviewCard key={`row1-${i}`} {...review} />
           ))}
         </div>
 
         {/* Track 2: Moving Right */}
         <div className="marquee-track flex gap-6 w-max animate-scroll-right">
-          {[...reviewsRow2, ...reviewsRow2].map((review, i) => (
+          {[...row2, ...row2].map((review, i) => (
             <ReviewCard key={`row2-${i}`} {...review} />
           ))}
         </div>

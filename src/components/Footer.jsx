@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import pb from '../pb';
 import ScrollReveal from './ScrollReveal';
 
 export default function Footer() {
+  const [content, setContent] = useState(null);
+
+  useEffect(() => {
+    pb.collection('section_footer').getFirstListItem('')
+      .then(data => setContent(data))
+      .catch(err => console.error("Footer fetch error:", err));
+  }, []);
+
   return (
     <footer className="bg-slate-950 pt-24 md:pt-32 pb-0 border-t border-slate-900 overflow-hidden relative selection:bg-white selection:text-slate-900">
        
@@ -9,15 +18,15 @@ export default function Footer() {
           
           {/* Col 1: Brand / Description */}
           <div className="flex flex-col">
-             <span className="text-white text-xl font-medium tracking-tight mb-6">Pixel Heaven</span>
+             <span className="text-white text-xl font-medium tracking-tight mb-6">{content?.brand_name || 'Pixel Heaven'}</span>
              <p className="text-slate-500 font-light leading-relaxed max-w-xs">
-               We act as your fractional design and engineering team to get you to market fast and beautifully.
+               {content?.description || 'We act as your fractional design and engineering team to get you to market fast and beautifully.'}
              </p>
           </div>
 
           {/* Col 2: Links */}
           <div className="flex flex-col">
-             <span className="text-xs font-semibold tracking-widest uppercase text-slate-700 mb-8 block">Studio</span>
+             <span className="text-xs font-semibold tracking-widest uppercase text-slate-700 mb-8 block">{content?.col1_title || 'Studio'}</span>
              <ul className="flex flex-col gap-4">
                 <li><a href="#" className="text-slate-400 hover:text-white transition-colors duration-300 font-light">Work</a></li>
                 <li><a href="#" className="text-slate-400 hover:text-white transition-colors duration-300 font-light">Services</a></li>
@@ -28,7 +37,7 @@ export default function Footer() {
 
           {/* Col 3: Socials */}
           <div className="flex flex-col">
-             <span className="text-xs font-semibold tracking-widest uppercase text-slate-700 mb-8 block">Socials</span>
+             <span className="text-xs font-semibold tracking-widest uppercase text-slate-700 mb-8 block">{content?.col2_title || 'Socials'}</span>
              <ul className="flex flex-col gap-4">
                 <li><a href="#" className="text-slate-400 hover:text-white transition-colors duration-300 font-light">Twitter</a></li>
                 <li><a href="#" className="text-slate-400 hover:text-white transition-colors duration-300 font-light">Instagram</a></li>
@@ -39,14 +48,12 @@ export default function Footer() {
 
           {/* Col 4: Legal & Local */}
           <div className="flex flex-col">
-             <span className="text-xs font-semibold tracking-widest uppercase text-slate-700 mb-8 block">Location</span>
-             <p className="text-slate-400 font-light mb-8">
-               San Francisco, CA<br/>
-               Remote Worldwide
+             <span className="text-xs font-semibold tracking-widest uppercase text-slate-700 mb-8 block">{content?.location_title || 'Location'}</span>
+             <p className="text-slate-400 font-light mb-8 whitespace-pre-line">
+               {content?.location_text || 'San Francisco, CA\nRemote Worldwide'}
              </p>
-             <span className="text-slate-600 font-light text-sm">
-               © 2026 Pixel Heaven.<br/>
-               All rights reserved.
+             <span className="text-slate-600 font-light text-sm whitespace-pre-line">
+               {content?.copyright_text || '© 2026 Pixel Heaven.\nAll rights reserved.'}
              </span>
           </div>
 
@@ -56,7 +63,7 @@ export default function Footer() {
        {/* Uses text-slate-900 on bg-slate-950 for a massive but subtle stealth effect */}
        <ScrollReveal className="w-full flex justify-center overflow-hidden pointer-events-none mt-auto select-none" delay={200}>
           <h2 className="text-[17vw] font-bold text-slate-900 tracking-tighter leading-[0.75] uppercase whitespace-nowrap">
-            Pixel Heaven
+            {content?.brand_name || 'Pixel Heaven'}
           </h2>
        </ScrollReveal>
 

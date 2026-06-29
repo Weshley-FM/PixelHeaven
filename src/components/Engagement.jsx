@@ -1,35 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import pb from '../pb';
 import ScrollReveal from './ScrollReveal';
 
-const models = [
-  {
-    id: 1,
-    title: 'Consulting & Audit',
-    price: 'Starting at $2k',
-    timeline: '1-3 Weeks',
-    desc: 'Strategic direction, UX audits, or brand positioning before diving into full execution.',
-    deliverables: ['Comprehensive UX/UI Audit', 'Brand Strategy Deck', 'Technical Feasibility Report']
-  },
-  {
-    id: 2,
-    title: 'Project-Based',
-    price: 'Starting at $10k',
-    timeline: '2-3 Months',
-    desc: 'End-to-end execution of a specific scope. We handle everything from the initial discovery to launch.',
-    deliverables: ['Full Product Design', 'Webflow/React Development', 'Launch Support']
-  },
-  {
-    id: 3,
-    title: 'Dedicated Team',
-    price: 'Custom Retainer',
-    timeline: 'Ongoing',
-    desc: 'An embedded team of world-class designers and engineers working alongside you as a strategic partner.',
-    deliverables: ['Continuous Iteration', 'Priority Resource Allocation', 'Direct Slack Channel']
-  }
-];
-
 export default function Engagement() {
-  const [activeIndex, setActiveIndex] = useState(1);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [models, setModels] = useState([]);
+
+  useEffect(() => {
+    pb.collection('engagement_models').getFullList({ sort: '+created' })
+      .then(data => setModels(data))
+      .catch(console.error);
+  }, []);
 
   return (
     <section className="bg-slate-50 relative h-[100svh] flex flex-col overflow-hidden">
@@ -85,7 +66,7 @@ export default function Engagement() {
                       {model.title}
                    </h4>
                    <p className="text-lg md:text-2xl text-slate-500 font-light max-w-xl leading-relaxed">
-                      {model.desc}
+                      {model.description}
                    </p>
                  </div>
 

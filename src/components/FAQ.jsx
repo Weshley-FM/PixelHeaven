@@ -1,36 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import pb from '../pb';
 import ScrollReveal from './ScrollReveal';
 
-const faqs = [
-  {
-    keyword: "Startups & Foundations",
-    question: "Do you work with early-stage startups?",
-    answer: "Absolutely. We specialize in helping early-stage companies establish a world-class brand and product foundation from day one. We act as your fractional design and engineering team to get you to market fast and beautifully."
-  },
-  {
-    keyword: "Project Timelines",
-    question: "What is your typical project timeline?",
-    answer: "Most of our core projects—like a full website redesign or MVP build—take between 4 to 8 weeks. We move incredibly fast by eliminating agency bureaucracy and working directly with your decision-makers."
-  },
-  {
-    keyword: "Pricing & Retainers",
-    question: "How much do your engagements cost?",
-    answer: "Our minimum project engagement starts at $10,000. We offer both fixed-bid pricing for clear scopes, and flexible monthly retainers for ongoing product development and design support."
-  },
-  {
-    keyword: "Design & Development",
-    question: "Do you handle both design and development?",
-    answer: "Yes. We believe design and engineering are inseparable. We design in Figma and build in React, Next.js, or Webflow, ensuring the final deployed product looks exactly like the approved design."
-  },
-  {
-    keyword: "Post-Launch Support",
-    question: "What happens after the project launches?",
-    answer: "We don't just hand off files and disappear. We offer post-launch support, ongoing iteration retainers, and comprehensive training for your internal team to ensure a seamless handoff."
-  }
-];
+// FAQs are now loaded from the database
 
 export default function FAQ() {
   const [activeFaq, setActiveFaq] = useState(null);
+  const [faqs, setFaqs] = useState([]);
+
+  useEffect(() => {
+    pb.collection('faqs').getFullList({ sort: '+created' })
+      .then(data => setFaqs(data))
+      .catch(console.error);
+  }, []);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -68,8 +50,8 @@ export default function FAQ() {
                    <span className="text-sm font-semibold tracking-widest text-slate-400">
                      0{index + 1}
                    </span>
-                   <span className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight text-slate-900 group-hover:translate-x-4 transition-transform duration-500">
-                     {faq.keyword}
+                   <span className="text-2xl md:text-3xl lg:text-4xl font-light tracking-tight text-slate-900 group-hover:translate-x-4 transition-transform duration-500">
+                     {faq.question}
                    </span>
                 </div>
                 
@@ -104,7 +86,7 @@ export default function FAQ() {
              {/* Sticky Header */}
              <div className="sticky top-0 bg-white/90 backdrop-blur-md flex justify-between items-center p-6 md:p-12 lg:p-16 border-b border-slate-100 z-10">
                 <span className="text-xs md:text-sm tracking-widest uppercase text-slate-500 font-semibold">
-                  Inquiry // {activeFaq?.keyword}
+                  Inquiry // FAQ
                 </span>
                 <button 
                   onClick={() => setActiveFaq(null)}

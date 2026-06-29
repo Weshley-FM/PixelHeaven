@@ -1,63 +1,94 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLogin from '../components/AdminLogin';
+import pb from '../pb';
+
+const tabs = [
+  { id: 'projects', label: 'Projects', type: 'list' },
+  { id: 'services', label: 'Services', type: 'list' },
+  { id: 'testimonials', label: 'Testimonials', type: 'list' },
+  { id: 'faqs', label: 'FAQs', type: 'list' },
+  { id: 'engagement_models', label: 'Engagement', type: 'list' },
+  { id: 'section_navbar', label: 'Navbar (Single)', type: 'single' },
+  { id: 'section_hero', label: 'Hero (Single)', type: 'single' },
+  { id: 'section_about', label: 'About (Single)', type: 'single' },
+  { id: 'section_cta', label: 'CTA (Single)', type: 'single' },
+  { id: 'section_footer', label: 'Footer (Single)', type: 'single' },
+  { id: 'page_about_team', label: 'About Team (List)', type: 'list' },
+];
+
+const schemaDefs = {
+  projects: ['title', 'category', 'year', 'image'],
+  services: ['number', 'title', 'description'],
+  testimonials: ['text', 'author', 'role'],
+  faqs: ['question', 'answer'],
+  engagement_models: ['title', 'price', 'timeline', 'description'],
+  section_navbar: ['brand_name', 'link_home', 'link_about', 'link_service', 'button_contact'],
+  section_hero: ['brand_name', 'founders_text', 'subtitle', 'draw_phrases'],
+  section_about: ['section_label', 'slide1_title', 'slide1_text', 'slide2_title', 'slide2_text', 'slide3_title', 'stat1_number', 'stat1_label', 'stat2_number', 'stat2_label', 'stat3_number', 'stat3_label', 'stat4_number', 'stat4_label', 'slide4_title', 'slide4_button'],
+  section_cta: ['section_label', 'title', 'description', 'placeholder_text'],
+  section_footer: ['brand_name', 'description', 'col1_title', 'col2_title', 'location_title', 'location_text', 'copyright_text'],
+  page_about_hero: ['title', 'subtitle', 'image_url', 'stat_number', 'stat_label', 'image_text'],
+  page_about_vision: ['section_label', 'title', 'paragraph_1', 'paragraph_2', 'team_text', 'visual_url', 'badge_number', 'badge_label'],
+  page_about_timeline: ['year', 'title', 'description', 'sort_order'],
+  page_about_why_reasons: ['number', 'title', 'description', 'sort_order'],
+  page_about_team: ['name', 'role', 'image_url', 'description', 'sort_order'],
+};
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
-  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('projects');
 
-  // Form State
+  // Data States
+  const [listData, setListData] = useState([]);
+  const [singleData, setSingleData] = useState(null);
+
+  // Form States
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [formData, setFormData] = useState({
-    title: '',
-    category: '',
-    year: '',
-    image: ''
-  });
+  const [formData, setFormData] = useState({});
 
   useEffect(() => {
-    // Check authentication on mount
-    const token = localStorage.getItem('adminToken');
-    if (token) {
-      fetch('http://localhost:5000/api/auth/me', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.user) {
-          setUser(data.user);
-          fetchProjects();
-        } else {
-          localStorage.removeItem('adminToken');
-          setLoading(false);
-        }
-      })
-      .catch(() => {
-        localStorage.removeItem('adminToken');
-        setLoading(false);
-      });
-    } else {
-      setLoading(false);
+    if (pb.authStore.isValid && pb.authStore.isAdmin) {
+      setUser(pb.authStore.model);
     }
+    setLoading(false);
   }, []);
 
-  const fetchProjects = async () => {
+  useEffect(() => {
+    if (user) {
+      fetchTabData();
+    }
+  }, [activeTab, user]);
+
+  const fetchTabData = async () => {
+    const tabObj = tabs.find(t => t.id === activeTab);
+    resetForm();
+    if (!tabObj) return;
+
     try {
-      const res = await fetch('http://localhost:5000/api/projects');
-      const data = await res.json();
-      setProjects(data);
+      if (tabObj.type === 'list') {
+        const records = await pb.collection(activeTab).getFullList({ sort: '-created' });
+        setListData(records);
+      } else {
+        try {
+          const record = await pb.collection(activeTab).getFirstListItem('');
+          setSingleData(record);
+          setFormData(record);
+        } catch (err) {
+          // If no record exists yet, it's fine, start with empty form
+          setSingleData(null);
+          setFormData({});
+        }
+      }
     } catch (err) {
-      console.error('Failed to fetch projects', err);
-    } finally {
-      setLoading(false);
+      console.error('Failed to fetch data', err);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
+    pb.authStore.clear();
     setUser(null);
   };
 
@@ -65,76 +96,57 @@ export default function AdminDashboard() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('adminToken');
-    
-    const url = isEditing 
-      ? `http://localhost:5000/api/projects/${editId}` 
-      : 'http://localhost:5000/api/projects';
-    
-    const method = isEditing ? 'PUT' : 'POST';
-
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (res.ok) {
-        setFormData({ title: '', category: '', year: '', image: '' });
-        setIsEditing(false);
-        setEditId(null);
-        fetchProjects(); // Refresh list
-      } else {
-        alert('Failed to save project');
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  const resetForm = () => {
+    setIsEditing(false);
+    setEditId(null);
+    setFormData({});
   };
 
-  const handleEdit = (project) => {
-    setIsEditing(true);
-    setEditId(project.id);
-    setFormData({
-      title: project.title,
-      category: project.category,
-      year: project.year,
-      image: project.image
-    });
+  const handleSubmitList = async (e) => {
+    e.preventDefault();
+    try {
+      if (isEditing) {
+        await pb.collection(activeTab).update(editId, formData);
+      } else {
+        await pb.collection(activeTab).create(formData);
+      }
+      resetForm();
+      fetchTabData();
+    } catch (err) {
+      alert('Save failed: ' + err.message);
+    }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this project?')) return;
-    
-    const token = localStorage.getItem('adminToken');
+    if (!window.confirm('Delete this item forever?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        fetchProjects();
-      } else {
-        alert('Failed to delete');
-      }
+      await pb.collection(activeTab).delete(id);
+      fetchTabData();
     } catch (err) {
       console.error(err);
     }
   };
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
+  const handleSubmitSingle = async (e) => {
+    e.preventDefault();
+    try {
+      if (singleData && singleData.id) {
+        await pb.collection(activeTab).update(singleData.id, formData);
+      } else {
+        await pb.collection(activeTab).create(formData);
+      }
+      alert('Saved successfully!');
+      fetchTabData();
+    } catch (err) {
+      alert('Save failed: ' + err.message);
+    }
+  };
 
-  if (!user) {
-    return <AdminLogin onLogin={(user) => { setUser(user); fetchProjects(); }} />;
-  }
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading CMS...</div>;
+  if (!user) return <AdminLogin onLogin={(user) => { setUser(user); }} />;
+
+  const currentTabObj = tabs.find(t => t.id === activeTab);
+  const fields = schemaDefs[activeTab] || [];
 
   return (
     <div className="min-h-screen bg-slate-50 pt-20 pb-12">
@@ -147,15 +159,8 @@ export default function AdminDashboard() {
             <p className="text-slate-500 mt-1">Logged in as {user.email}</p>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/" className="text-slate-500 hover:text-slate-900 transition-colors font-medium">
-              View Site &rarr;
-            </Link>
-            <button 
-              onClick={handleLogout}
-              className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition-colors"
-            >
-              Sign Out
-            </button>
+            <Link to="/" className="text-slate-500 hover:text-slate-900 font-medium">View Site &rarr;</Link>
+            <button onClick={handleLogout} className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium">Sign Out</button>
           </div>
         </div>
         
@@ -163,119 +168,92 @@ export default function AdminDashboard() {
           
           {/* Sidebar */}
           <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 h-fit">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Menu</h3>
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Collections</h3>
             <ul className="space-y-2">
-              <li>
-                <button 
-                  onClick={() => setActiveTab('projects')}
-                  className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-colors ${
-                    activeTab === 'projects' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                >
-                  Projects
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setActiveTab('settings')}
-                  className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-colors ${
-                    activeTab === 'settings' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                >
-                  Settings
-                </button>
-              </li>
+              {tabs.map(tab => (
+                <li key={tab.id}>
+                  <button 
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full text-left px-4 py-3 rounded-xl font-medium ${
+                      activeTab === tab.id ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
           
-          {/* Main Content Area */}
+          {/* Main Area */}
           <div className="space-y-8">
             
-            {activeTab === 'projects' && (
+            {currentTabObj?.type === 'list' && (
               <>
-                {/* Form Card */}
                 <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                  <h3 className="text-xl font-bold text-slate-900 mb-6">
-                    {isEditing ? 'Edit Project' : 'Add New Project'}
-                  </h3>
-                  <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Title</label>
-                      <input type="text" name="title" value={formData.title} onChange={handleInputChange} required
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                  <h3 className="text-xl font-bold text-slate-900 mb-6">{isEditing ? `Edit ${currentTabObj.label}` : `Add ${currentTabObj.label}`}</h3>
+                  <form onSubmit={handleSubmitList} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {fields.map(field => (
+                        <div key={field} className={field.includes('text') || field.includes('description') || field.includes('answer') ? 'col-span-1 md:col-span-2' : ''}>
+                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{field.replace(/_/g, ' ')}</label>
+                          {field.includes('text') || field.includes('description') || field.includes('answer') ? (
+                            <textarea name={field} value={formData[field] || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" rows="3" />
+                          ) : (
+                            <input type="text" name={field} value={formData[field] || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" />
+                          )}
+                        </div>
+                      ))}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
-                      <input type="text" name="category" value={formData.category} onChange={handleInputChange} required
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Year</label>
-                      <input type="text" name="year" value={formData.year} onChange={handleInputChange} required
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Image URL</label>
-                      <input type="url" name="image" value={formData.image} onChange={handleInputChange} required
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900" />
-                    </div>
-                    <div className="md:col-span-2 flex justify-end gap-4 mt-2">
-                      {isEditing && (
-                        <button type="button" onClick={() => { setIsEditing(false); setFormData({title:'',category:'',year:'',image:''}); }} className="px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors">
-                          Cancel
-                        </button>
-                      )}
-                      <button type="submit" className="px-8 py-3 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-colors">
-                        {isEditing ? 'Save Changes' : 'Create Project'}
-                      </button>
+                    <div className="flex justify-end gap-2 mt-4">
+                      {isEditing && <button type="button" onClick={resetForm} className="px-6 py-3 bg-slate-100 rounded-xl">Cancel</button>}
+                      <button type="submit" className="px-8 py-3 bg-slate-900 text-white rounded-xl">Save</button>
                     </div>
                   </form>
                 </div>
 
-                {/* List Card */}
-                <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                  <h3 className="text-xl font-bold text-slate-900 mb-6">Manage Projects</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-slate-100">
-                          <th className="py-4 font-semibold text-slate-500">Project</th>
-                          <th className="py-4 font-semibold text-slate-500">Category</th>
-                          <th className="py-4 font-semibold text-slate-500">Year</th>
-                          <th className="py-4 font-semibold text-slate-500 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {projects.map((p) => (
-                          <tr key={p.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
-                            <td className="py-4 py-4 font-medium text-slate-900 flex items-center gap-4">
-                              <img src={p.image} alt={p.title} className="w-12 h-12 object-cover rounded-lg" />
-                              {p.title}
-                            </td>
-                            <td className="py-4 text-slate-500">{p.category}</td>
-                            <td className="py-4 text-slate-500">{p.year}</td>
-                            <td className="py-4 text-right">
-                              <button onClick={() => handleEdit(p)} className="text-blue-500 hover:text-blue-700 font-medium mr-4">Edit</button>
-                              <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:text-red-700 font-medium">Delete</button>
-                            </td>
-                          </tr>
+                <div className="bg-white p-8 rounded-3xl border border-slate-100">
+                  <h3 className="text-xl font-bold text-slate-900 mb-4">Manage {currentTabObj.label}</h3>
+                  {listData.map(item => (
+                    <div key={item.id} className="flex items-center justify-between py-4 border-b">
+                      <div>
+                        {fields.slice(0, 2).map((f, i) => (
+                          <span key={f} className={i === 0 ? "font-medium mr-4" : "text-sm text-slate-500"}>
+                            {String(item[f] || '').substring(0, 50)}
+                          </span>
                         ))}
-                        {projects.length === 0 && (
-                          <tr>
-                            <td colSpan="4" className="py-8 text-center text-slate-500">No projects found. Create one above!</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                      </div>
+                      <div>
+                        <button onClick={() => {setIsEditing(true); setEditId(item.id); setFormData(item);}} className="text-blue-500 mr-4">Edit</button>
+                        <button onClick={() => handleDelete(item.id)} className="text-red-500">Delete</button>
+                      </div>
+                    </div>
+                  ))}
+                  {listData.length === 0 && <p className="text-slate-400">No items found.</p>}
                 </div>
               </>
             )}
 
-            {activeTab === 'settings' && (
+            {currentTabObj?.type === 'single' && (
               <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                <h3 className="text-xl font-bold text-slate-900 mb-4">Settings</h3>
-                <p className="text-slate-500">System settings coming soon.</p>
+                <h3 className="text-xl font-bold text-slate-900 mb-6">Manage {currentTabObj.label}</h3>
+                <form onSubmit={handleSubmitSingle} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {fields.map(field => (
+                      <div key={field} className={field.includes('text') || field.includes('description') ? 'col-span-1 md:col-span-2' : ''}>
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{field.replace(/_/g, ' ')}</label>
+                        {field.includes('text') || field.includes('description') || field.includes('phrases') ? (
+                          <textarea name={field} value={formData[field] || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" rows="3" />
+                        ) : (
+                          <input type="text" name={field} value={formData[field] || ''} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-end mt-4">
+                    <button type="submit" className="px-8 py-3 bg-slate-900 text-white rounded-xl">Save Changes</button>
+                  </div>
+                </form>
               </div>
             )}
 
