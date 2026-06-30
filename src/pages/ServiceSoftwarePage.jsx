@@ -13,15 +13,8 @@ import Footer from '../components/Footer';
 import pb from '../pb';
 
 export default function ServiceSoftwarePage() {
-  const [heroData, setHeroData] = useState(null);
-
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    // Fetch hero data from PB
-    pb.collection('page_software_hero').getFirstListItem('')
-      .then(record => setHeroData(record))
-      .catch(err => console.error("Error fetching software hero:", err));
   }, []);
 
   return (
@@ -29,19 +22,11 @@ export default function ServiceSoftwarePage() {
       <Navbar />
       
       <main>
-        {heroData ? (
-          <ServiceHero 
-            title={heroData.title}
-            subtitle="SOFTWARE"
-            description={heroData.description}
-          />
-        ) : (
-          <ServiceHero 
-            title="Custom Software"
-            subtitle="Service"
-            description="Loading..."
-          />
-        )}
+        <ServiceHero 
+          title="Custom Software"
+          subtitle="Service"
+          description="Tailored applications designed specifically for your business logic."
+        />
         
         {/* 2. Persuade Section */}
         <ServiceSoftwarePersuade />

@@ -1,6 +1,5 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
-import SideNav from '../components/SideNav';
 import Hero from '../components/Hero';
 import About from '../components/About';
 import ProductsA from '../components/ProductsA';
@@ -16,7 +15,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <SideNav />
       <Hero />
       <About />
       <ProductsA />

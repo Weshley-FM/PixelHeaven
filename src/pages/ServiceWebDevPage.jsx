@@ -11,15 +11,8 @@ import Footer from '../components/Footer';
 import pb from '../pb';
 
 export default function ServiceWebDevPage() {
-  const [heroData, setHeroData] = useState(null);
-
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    // Fetch hero data from PB
-    pb.collection('page_webdev_hero').getFirstListItem('')
-      .then(record => setHeroData(record))
-      .catch(err => console.error("Error fetching web dev hero:", err));
   }, []);
 
   return (
@@ -27,19 +20,11 @@ export default function ServiceWebDevPage() {
       <Navbar />
       
       <main>
-        {heroData ? (
-          <ServiceHero 
-            title={heroData.title}
-            subtitle="WEB DEV"
-            description={heroData.description}
-          />
-        ) : (
-          <ServiceHero 
-            title="Website Development"
-            subtitle="Service"
-            description="Loading..."
-          />
-        )}
+        <ServiceHero 
+          title="Website Development"
+          subtitle="Service"
+          description="Blazing fast, responsive, and scalable web solutions."
+        />
         
         <ServiceWebDevFeatures />
         

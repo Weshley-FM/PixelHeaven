@@ -15,7 +15,8 @@ export default function ServiceHero({ title, subtitle, description }) {
     setMousePos({ x, y });
   };
 
-  const splitTitle = title.split(' ');
+  const safeTitle = typeof title === 'string' ? title : (title || '');
+  const splitTitle = safeTitle.split(' ');
   const firstWord = splitTitle[0] || '';
   const restWords = splitTitle.slice(1).join(' ');
 

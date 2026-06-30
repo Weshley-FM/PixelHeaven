@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import SideNav from '../components/SideNav';
 import Footer from '../components/Footer';
 import AboutUsHero from '../components/AboutUsHero';
 import AboutUsTimeline from '../components/AboutUsTimeline';
@@ -18,7 +17,6 @@ export default function AboutPage() {
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
       <Navbar />
-      <SideNav />
       
       <main>
         <AboutUsHero />

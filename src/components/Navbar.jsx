@@ -51,12 +51,12 @@ export default function Navbar() {
           <span className={`h-[2px] w-full bg-slate-900 mt-1 transition-transform duration-300 ease-out ${isActive('/about') ? 'scale-x-100' : 'origin-right scale-x-0 group-hover:scale-x-100 group-hover:origin-left'}`}></span>
         </Link>
         <div className="group relative flex flex-col text-slate-500 hover:text-slate-900 font-normal transition-colors cursor-pointer">
-          <div className="flex items-center gap-1">
+          <Link to="/services/web-dev" className="flex items-center gap-1">
             <span>{content?.link_service || 'Service'}</span>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mt-[2px] transition-transform duration-300 group-hover:-rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
-          </div>
+          </Link>
           <span className="h-[1px] w-full bg-slate-900 origin-right scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left mt-1"></span>
 
           {/* Dropdown Menu */}

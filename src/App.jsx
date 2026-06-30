@@ -7,11 +7,13 @@ import ServiceWebDevPage from './pages/ServiceWebDevPage';
 import ServiceSoftwarePage from './pages/ServiceSoftwarePage';
 import AdminDashboard from './pages/AdminDashboard';
 import ContactPage from './pages/ContactPage';
+import SideNav from './components/SideNav';
 import './App.css';
 
 function App() {
   return (
     <Router>
+      <SideNav />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<AboutPage />} />

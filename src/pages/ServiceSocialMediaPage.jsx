@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import SideNav from '../components/SideNav';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 
@@ -12,7 +11,6 @@ export default function ServiceSocialMediaPage() {
   return (
     <div className="bg-white min-h-screen flex flex-col selection:bg-slate-900 selection:text-white text-slate-900 relative">
       <Navbar />
-      <SideNav />
       
       <main className="flex-grow flex flex-col items-center justify-center w-full min-h-[calc(100vh-160px)] bg-gray-50 relative py-20">
         <div className="flex flex-col items-center justify-center relative z-10 w-full">
